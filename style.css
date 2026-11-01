@@ -15,32 +15,38 @@
   --shadow: 0 4px 20px rgba(15, 23, 42, 0.06);
 }
 
-* {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
+html,
 body {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
   font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", Meiryo, sans-serif;
   background-color: var(--bg);
   color: var(--text-main);
   line-height: 1.6;
-  overflow-x: hidden;
-  width: 100%;
 }
 
 .container {
+  width: 100%;
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 20px;
 }
 
 .hero {
+  width: 100%;
   background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 60%, #1d4ed8 100%);
   color: #ffffff;
   padding: 36px 0 42px;
-  margin-bottom: 28px;
+  margin-bottom: 24px;
 }
 
 .hero .badge {
@@ -60,6 +66,7 @@ body {
   flex-wrap: wrap;
   gap: 10px;
   margin-bottom: 14px;
+  width: 100%;
 }
 
 .survey-date {
@@ -84,12 +91,13 @@ body {
 .hero .subtitle {
   color: rgba(255, 255, 255, 0.88);
   font-size: 0.98rem;
-  max-width: 780px;
+  max-width: 100%;
 }
 
 /* 画面の縦横・レイアウト切替バー */
 .layout-switcher-bar {
   margin-top: 18px;
+  width: 100%;
   background: rgba(15, 23, 42, 0.42);
   border: 1px solid rgba(255, 255, 255, 0.25);
   border-radius: 12px;
@@ -117,6 +125,7 @@ body {
   background: #34d399;
   box-shadow: 0 0 8px #34d399;
   display: inline-block;
+  flex-shrink: 0;
 }
 
 .layout-btn-group {
@@ -150,175 +159,33 @@ body {
 
 .main-grid {
   display: grid;
-  grid-template-columns: 420px 1fr;
+  grid-template-columns: 420px minmax(0, 1fr);
   gap: 24px;
   align-items: start;
-}
-
-/* 縦画面モード（1カラム配置：画面横幅めいっぱいに100%統一） */
-body.layout-portrait .container {
-  width: 100%;
-  max-width: 100%;
-  padding-left: 10px;
-  padding-right: 10px;
-}
-
-body.layout-portrait .main-grid {
-  grid-template-columns: minmax(0, 1fr);
-  width: 100%;
-  gap: 16px;
-}
-
-body.layout-portrait .form-section,
-body.layout-portrait .results-section,
-body.layout-portrait .savings-banner,
-body.layout-portrait .ranking-wrapper,
-body.layout-portrait .rank-card,
-body.layout-portrait .provider-matrix-card,
-body.layout-portrait .all-patterns-section,
-body.layout-portrait .chart-card {
-  width: 100%;
-  max-width: 100%;
-  min-width: 0;
-  margin-left: 0;
-  margin-right: 0;
-  box-sizing: border-box;
-}
-
-body.layout-portrait .card,
-body.layout-portrait .savings-banner,
-body.layout-portrait .ranking-wrapper,
-body.layout-portrait .provider-matrix-card,
-body.layout-portrait .chart-card {
-  padding-left: 14px;
-  padding-right: 14px;
-}
-
-body.layout-portrait .source-link {
-  white-space: normal;
-  word-break: break-word;
-}
-
-body.layout-portrait .ranking-list {
-  padding-right: 0;
   width: 100%;
 }
 
-body.layout-portrait .savings-grid {
-  grid-template-columns: minmax(0, 1fr);
+.form-section,
+.results-section {
   width: 100%;
-}
-
-body.layout-portrait .saving-arrow {
-  transform: rotate(90deg);
-  text-align: center;
-  margin: -4px 0;
-}
-
-body.layout-portrait .saving-box,
-body.layout-portrait .annual-saving-pill,
-body.layout-portrait .breakdown-grid,
-body.layout-portrait .breakdown-item,
-body.layout-portrait .sources-box,
-body.layout-portrait .source-list,
-body.layout-portrait .source-item {
-  width: 100%;
-  max-width: 100%;
   min-width: 0;
 }
 
-body.layout-portrait .breakdown-grid {
-  grid-template-columns: minmax(0, 1fr);
-}
-
-body.layout-portrait .rank-header {
-  flex-direction: column;
-  align-items: stretch;
-}
-
-body.layout-portrait .combo-total {
+.card {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+  padding: 24px;
   width: 100%;
-  text-align: right;
-  background: #f8fafc;
-  padding: 8px 12px;
-  border-radius: 8px;
-  border: 1px solid #e2e8f0;
+  min-width: 0;
 }
 
-body.layout-portrait .matrix-tabs {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  width: 100%;
-}
-
-body.layout-portrait .tab-btn {
-  width: 100%;
-  text-align: center;
-}
-
-body.layout-portrait .chart-controls {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  width: 100%;
-}
-
-body.layout-portrait .chart-sort-btn {
-  width: 100%;
-  text-align: center;
-}
-
-body.layout-portrait .chart-row {
-  grid-template-columns: 54px minmax(0, 1fr) auto;
-  gap: 8px;
-  width: 100%;
-}
-
-body.layout-portrait .chart-bar-track-wrap {
-  grid-column: 1 / -1;
-  width: 100%;
-}
-
-body.layout-portrait .chart-price-col {
-  grid-column: 3 / 4;
-  grid-row: 1 / 2;
-  text-align: right !important;
-}
-
-/* 横画面モード（スマホ横・タブレット・PCすべて左右2列スプリット配置） */
-body.layout-landscape .main-grid {
-  grid-template-columns: minmax(290px, 38%) minmax(0, 1fr);
-  gap: 18px;
-  align-items: start;
-}
-
-body.layout-landscape .form-section {
-  position: sticky;
-  top: 14px;
-  max-height: calc(100vh - 28px);
-  overflow-y: auto;
-}
-
-/* スマホ横画面（高さが低い横向き画面）でのコンパクト2列最適化 */
-body.is-compact-landscape .hero {
-  padding: 16px 0 18px;
-  margin-bottom: 14px;
-}
-
-body.is-compact-landscape .hero h1 {
-  font-size: 1.25rem;
-  margin-bottom: 6px;
-}
-
-body.is-compact-landscape .hero .subtitle {
-  font-size: 0.82rem;
-}
-
-body.is-compact-landscape .card {
-  padding: 14px 16px;
-}
-
-body.is-compact-landscape .ranking-list {
-  max-height: 460px;
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
 }
 
 .form-header-bar {
@@ -343,31 +210,12 @@ body.is-compact-landscape .ranking-list {
   cursor: pointer;
 }
 
-body.layout-portrait .collapse-form-btn {
-  display: inline-block;
-}
-
 .form-section.collapsed #sim-form {
   display: none;
 }
 
 .form-section.collapsed .section-header {
   margin-bottom: 0;
-}
-
-.card {
-  background: var(--card-bg);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  border: 1px solid var(--border);
-  padding: 24px;
-}
-
-.section-header {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 20px;
 }
 
 .step-tag {
@@ -378,6 +226,7 @@ body.layout-portrait .collapse-form-btn {
   padding: 3px 10px;
   border-radius: 999px;
   letter-spacing: 0.05em;
+  flex-shrink: 0;
 }
 
 .section-header h2 {
@@ -388,6 +237,7 @@ body.layout-portrait .collapse-form-btn {
   margin-bottom: 20px;
   padding-bottom: 18px;
   border-bottom: 1px solid #f1f5f9;
+  width: 100%;
 }
 
 .form-group:last-child {
@@ -411,10 +261,12 @@ body.layout-portrait .collapse-form-btn {
   background: #f1f5f9;
   padding: 5px;
   border-radius: 10px;
+  width: 100%;
 }
 
 .segment {
   cursor: pointer;
+  width: 100%;
 }
 
 .segment input {
@@ -423,6 +275,7 @@ body.layout-portrait .collapse-form-btn {
 
 .segment span {
   display: block;
+  width: 100%;
   text-align: center;
   padding: 9px 10px;
   border-radius: 8px;
@@ -454,6 +307,7 @@ body.layout-portrait .collapse-form-btn {
   padding: 12px;
   border-radius: 10px;
   border: 1px solid #e2e8f0;
+  width: 100%;
 }
 
 .sub-control label {
@@ -474,15 +328,18 @@ input[type="range"] {
   font-size: 0.75rem;
   color: var(--text-muted);
   margin-top: 4px;
+  width: 100%;
 }
 
 .preset-buttons {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 6px;
+  width: 100%;
 }
 
 .preset-btn {
+  width: 100%;
   background: #f8fafc;
   border: 1px solid #cbd5e1;
   border-radius: 8px;
@@ -530,6 +387,7 @@ input[type="range"] {
   padding: 22px 24px;
   margin-bottom: 20px;
   box-shadow: var(--shadow);
+  width: 100%;
 }
 
 .savings-header {
@@ -545,20 +403,11 @@ input[type="range"] {
 
 .savings-grid {
   display: grid;
-  grid-template-columns: 1fr auto 1fr;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   gap: 14px;
   align-items: center;
   margin-bottom: 14px;
-}
-
-@media (max-width: 640px) {
-  .savings-grid {
-    grid-template-columns: 1fr;
-  }
-  .saving-arrow {
-    transform: rotate(90deg);
-    text-align: center;
-  }
+  width: 100%;
 }
 
 .saving-box {
@@ -566,6 +415,7 @@ input[type="range"] {
   border-radius: 10px;
   background: #ffffff;
   border: 1px solid var(--border);
+  width: 100%;
 }
 
 .saving-box.best {
@@ -608,6 +458,7 @@ input[type="range"] {
   padding: 10px 16px;
   border-radius: 10px;
   font-size: 0.95rem;
+  width: 100%;
 }
 
 .annual-saving-pill strong {
@@ -619,6 +470,7 @@ input[type="range"] {
 .ranking-wrapper {
   padding: 20px 22px;
   margin-bottom: 24px;
+  width: 100%;
 }
 
 .ranking-wrapper-header {
@@ -630,6 +482,7 @@ input[type="range"] {
   margin-bottom: 14px;
   padding-bottom: 12px;
   border-bottom: 1px solid var(--border);
+  width: 100%;
 }
 
 .ranking-wrapper-header h3 {
@@ -652,8 +505,9 @@ input[type="range"] {
   gap: 16px;
   max-height: 720px;
   overflow-y: auto;
-  padding-right: 8px;
+  padding-right: 6px;
   scroll-behavior: smooth;
+  width: 100%;
 }
 
 .ranking-list::-webkit-scrollbar {
@@ -682,6 +536,7 @@ input[type="range"] {
   box-shadow: 0 2px 10px rgba(15, 23, 42, 0.04);
   position: relative;
   flex-shrink: 0;
+  width: 100%;
 }
 
 .rank-card.rank-1 {
@@ -696,6 +551,7 @@ input[type="range"] {
   gap: 12px;
   margin-bottom: 14px;
   flex-wrap: wrap;
+  width: 100%;
 }
 
 .rank-title-group {
@@ -762,15 +618,10 @@ input[type="range"] {
 
 .breakdown-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 10px;
   margin-bottom: 12px;
-}
-
-@media (max-width: 640px) {
-  .breakdown-grid {
-    grid-template-columns: 1fr;
-  }
+  width: 100%;
 }
 
 .breakdown-item {
@@ -778,6 +629,7 @@ input[type="range"] {
   border: 1px solid #e2e8f0;
   border-radius: 8px;
   padding: 10px 12px;
+  width: 100%;
 }
 
 .breakdown-item .item-title {
@@ -808,6 +660,7 @@ input[type="range"] {
   flex-wrap: wrap;
   gap: 6px;
   margin-bottom: 8px;
+  width: 100%;
 }
 
 .tag {
@@ -836,6 +689,7 @@ input[type="range"] {
   border-radius: 10px;
   padding: 12px 14px;
   margin-top: 10px;
+  width: 100%;
 }
 
 .sources-box-title {
@@ -853,6 +707,7 @@ input[type="range"] {
   display: flex;
   flex-direction: column;
   gap: 6px;
+  width: 100%;
 }
 
 .source-item {
@@ -863,10 +718,11 @@ input[type="range"] {
   align-items: center;
   flex-wrap: wrap;
   gap: 8px;
-  padding: 5px 8px;
+  padding: 6px 10px;
   background: #ffffff;
   border-radius: 6px;
   border: 1px solid #e2e8f0;
+  width: 100%;
 }
 
 .source-item.no-bundle {
@@ -883,7 +739,6 @@ input[type="range"] {
   font-weight: 600;
   text-decoration: none;
   font-size: 0.78rem;
-  white-space: nowrap;
 }
 
 .source-link:hover {
@@ -892,6 +747,10 @@ input[type="range"] {
 }
 
 /* マトリクステーブル */
+.provider-matrix-card {
+  width: 100%;
+}
+
 .provider-matrix-card h3 {
   font-size: 1.1rem;
   margin-bottom: 4px;
@@ -904,19 +763,23 @@ input[type="range"] {
 }
 
 .matrix-tabs {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 8px;
   margin-bottom: 14px;
+  width: 100%;
 }
 
 .tab-btn {
-  padding: 8px 16px;
+  width: 100%;
+  padding: 8px 14px;
   border-radius: 8px;
   border: 1px solid var(--border);
   background: #f8fafc;
   font-weight: 600;
   font-size: 0.86rem;
   cursor: pointer;
+  text-align: center;
 }
 
 .tab-btn.active {
@@ -926,6 +789,8 @@ input[type="range"] {
 }
 
 .table-responsive {
+  width: 100%;
+  max-width: 100%;
   overflow-x: auto;
 }
 
@@ -954,11 +819,13 @@ input[type="range"] {
 
 /* ページ末尾：全30パターン比較グラフ */
 .all-patterns-section {
-  margin-top: 28px;
+  margin-top: 24px;
+  width: 100%;
 }
 
 .chart-card {
-  padding: 26px 28px;
+  padding: 24px;
+  width: 100%;
 }
 
 .chart-header {
@@ -968,6 +835,7 @@ input[type="range"] {
   flex-wrap: wrap;
   gap: 16px;
   margin-bottom: 18px;
+  width: 100%;
 }
 
 .chart-header h2 {
@@ -1010,6 +878,7 @@ input[type="range"] {
   font-size: 0.82rem;
   font-weight: 600;
   color: #334155;
+  width: 100%;
 }
 
 .legend-item {
@@ -1023,6 +892,7 @@ input[type="range"] {
   height: 16px;
   border-radius: 4px;
   display: inline-block;
+  flex-shrink: 0;
 }
 
 .legend-swatch.net-swatch {
@@ -1043,23 +913,26 @@ input[type="range"] {
   height: 0;
   border-top: 2px dashed #ef4444;
   display: inline-block;
+  flex-shrink: 0;
 }
 
 .bar-chart-container {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  width: 100%;
 }
 
 .chart-row {
   display: grid;
-  grid-template-columns: 58px 270px 1fr 135px;
+  grid-template-columns: 58px 270px minmax(0, 1fr) 135px;
   align-items: center;
   gap: 12px;
-  padding: 8px 12px;
+  padding: 10px 12px;
   border-radius: 10px;
   background: #ffffff;
   border: 1px solid #e2e8f0;
+  width: 100%;
   transition: transform 0.12s ease, box-shadow 0.12s ease;
 }
 
@@ -1076,20 +949,6 @@ input[type="range"] {
 .chart-row.has-direct-bundle {
   background: #fefce8;
   border-color: #fde047;
-}
-
-@media (max-width: 860px) {
-  .chart-row {
-    grid-template-columns: 50px 1fr;
-    gap: 8px;
-  }
-  .chart-bar-track-wrap {
-    grid-column: 1 / -1;
-  }
-  .chart-price-col {
-    grid-column: 2 / 3;
-    text-align: left !important;
-  }
 }
 
 .chart-rank-pill {
@@ -1122,6 +981,7 @@ input[type="range"] {
   display: flex;
   flex-direction: column;
   line-height: 1.3;
+  min-width: 0;
 }
 
 .chart-combo-title {
@@ -1143,6 +1003,7 @@ input[type="range"] {
   overflow: visible;
   display: flex;
   align-items: center;
+  width: 100%;
 }
 
 .chart-bar-stack {
@@ -1232,10 +1093,6 @@ input[type="range"] {
   gap: 10px;
 }
 
-body.layout-portrait .mobile-floating-bar {
-  display: flex;
-}
-
 .floating-bar-info {
   display: flex;
   flex-direction: column;
@@ -1291,48 +1148,177 @@ body.layout-portrait .mobile-floating-bar {
   white-space: nowrap;
 }
 
-/* スマホ小画面（幅600px以下）での文字・余白最適化 */
-@media (max-width: 600px) {
-  .container {
-    padding: 0 12px;
-  }
-  .hero {
-    padding: 22px 0 24px;
-    margin-bottom: 16px;
-  }
-  .hero h1 {
-    font-size: 1.35rem;
-  }
-  .hero .subtitle {
-    font-size: 0.86rem;
-  }
-  .card {
-    padding: 16px 14px;
-  }
-  .preset-buttons {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  .segmented-control {
-    grid-template-columns: 1fr;
-  }
-  .combo-name {
-    font-size: 1.02rem;
-  }
-  .combo-total {
-    text-align: left;
-    width: 100%;
-    background: #f8fafc;
-    padding: 8px 12px;
-    border-radius: 8px;
-  }
-  .chart-header {
-    flex-direction: column;
-  }
-  .chart-controls {
-    width: 100%;
-  }
-  .chart-sort-btn {
-    flex: 1;
-    text-align: center;
-  }
+/* ==========================================================================
+   レイアウトモード別オーバーライド（最優先適用）
+   ========================================================================== */
+
+/* 横画面モード（スマホ横・タブレット・PCすべて左右2列スプリット配置） */
+body.layout-landscape .main-grid {
+  display: grid;
+  grid-template-columns: minmax(290px, 38%) minmax(0, 1fr);
+  gap: 18px;
+  align-items: start;
+}
+
+body.layout-landscape .form-section {
+  position: sticky;
+  top: 14px;
+  max-height: calc(100vh - 28px);
+  overflow-y: auto;
+}
+
+body.is-compact-landscape .hero {
+  padding: 16px 0 18px;
+  margin-bottom: 14px;
+}
+
+body.is-compact-landscape .hero h1 {
+  font-size: 1.25rem;
+  margin-bottom: 6px;
+}
+
+body.is-compact-landscape .hero .subtitle {
+  font-size: 0.82rem;
+}
+
+body.is-compact-landscape .card {
+  padding: 14px 16px;
+}
+
+body.is-compact-landscape .ranking-list {
+  max-height: 460px;
+}
+
+/* 縦画面1列モード（すべての枠を画面端まで100%同一幅で揃える） */
+body.layout-portrait .container {
+  width: 100% !important;
+  max-width: 100% !important;
+  padding-left: 10px !important;
+  padding-right: 10px !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+
+body.layout-portrait .main-grid {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: stretch !important;
+  width: 100% !important;
+  gap: 16px !important;
+}
+
+body.layout-portrait .form-section,
+body.layout-portrait .results-section,
+body.layout-portrait .savings-banner,
+body.layout-portrait .ranking-wrapper,
+body.layout-portrait .rank-card,
+body.layout-portrait .provider-matrix-card,
+body.layout-portrait .all-patterns-section,
+body.layout-portrait .chart-card {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  padding-left: 14px !important;
+  padding-right: 14px !important;
+}
+
+body.layout-portrait .results-section,
+body.layout-portrait .all-patterns-section {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+body.layout-portrait .all-patterns-section {
+  padding-left: 10px !important;
+  padding-right: 10px !important;
+}
+
+body.layout-portrait .collapse-form-btn {
+  display: inline-block;
+}
+
+body.layout-portrait .mobile-floating-bar {
+  display: flex;
+}
+
+body.layout-portrait .layout-btn-group {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  width: 100%;
+}
+
+body.layout-portrait .layout-mode-btn {
+  width: 100%;
+  text-align: center;
+  padding: 7px 4px;
+}
+
+body.layout-portrait .savings-grid {
+  grid-template-columns: minmax(0, 1fr) !important;
+  width: 100% !important;
+}
+
+body.layout-portrait .saving-arrow {
+  transform: rotate(90deg);
+  text-align: center;
+  margin: -4px 0;
+}
+
+body.layout-portrait .ranking-list {
+  padding-right: 0 !important;
+  width: 100% !important;
+}
+
+body.layout-portrait .rank-header {
+  flex-direction: column !important;
+  align-items: stretch !important;
+}
+
+body.layout-portrait .combo-total {
+  width: 100% !important;
+  text-align: right !important;
+  background: #f8fafc;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+body.layout-portrait .breakdown-grid {
+  grid-template-columns: minmax(0, 1fr) !important;
+  width: 100% !important;
+}
+
+body.layout-portrait .chart-header {
+  flex-direction: column !important;
+  align-items: stretch !important;
+}
+
+body.layout-portrait .chart-controls {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  width: 100% !important;
+}
+
+body.layout-portrait .chart-sort-btn {
+  width: 100% !important;
+  text-align: center !important;
+}
+
+body.layout-portrait .chart-row {
+  grid-template-columns: 52px minmax(0, 1fr) auto !important;
+  gap: 8px !important;
+  width: 100% !important;
+}
+
+body.layout-portrait .chart-bar-track-wrap {
+  grid-column: 1 / -1 !important;
+  width: 100% !important;
+}
+
+body.layout-portrait .chart-price-col {
+  grid-column: 3 / 4 !important;
+  grid-row: 1 / 2 !important;
+  text-align: right !important;
 }
