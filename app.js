@@ -340,6 +340,66 @@ const ELECTRICITY_PROVIDERS = [
 
 let activeMatrixTab = "internet";
 let activeChartSort = "rank";
+let activeLayoutMode = "auto"; // "auto" | "portrait" | "landscape"
+
+function applyResponsiveLayout() {
+  const width = window.innerWidth;
+  const height = window.innerHeight;
+  const isPortraitMedia = window.matchMedia
+    ? window.matchMedia("(orientation: portrait)").matches
+    : height >= width;
+
+  let resolvedLayout = "landscape";
+  let statusText = "";
+
+  if (activeLayoutMode === "auto") {
+    // 縦長画面（または幅760px未満の縦向き）は縦1列モード、横長画面は左右2列モード
+    if (isPortraitMedia && width < 900) {
+      resolvedLayout = "portrait";
+      statusText = `📱 縦画面を自動検出（${width}×${height}px）：スマホ縦1列＋下部ミニ結果バー配置`;
+    } else if (!isPortraitMedia && width < 960) {
+      resolvedLayout = "landscape";
+      statusText = `📲 スマホ・タブレット横画面を自動検出（${width}×${height}px）：左右2列スプリット配置`;
+    } else if (width < 760) {
+      resolvedLayout = "portrait";
+      statusText = `📱 コンパクト画面を自動検出（${width}×${height}px）：縦1列配置`;
+    } else {
+      resolvedLayout = "landscape";
+      statusText = `💻 ワイド・横画面を自動検出（${width}×${height}px）：左右2列配置`;
+    }
+  } else if (activeLayoutMode === "portrait") {
+    resolvedLayout = "portrait";
+    statusText = `📱 縦1列モード（手動固定中：スマホ縦画面向け配置）`;
+  } else {
+    resolvedLayout = "landscape";
+    statusText = `📲 左右2列モード（手動固定中：横画面・PC向け配置）`;
+  }
+
+  document.body.classList.toggle("layout-portrait", resolvedLayout === "portrait");
+  document.body.classList.toggle("layout-landscape", resolvedLayout === "landscape");
+  document.body.classList.toggle(
+    "is-compact-landscape",
+    resolvedLayout === "landscape" && height < 560
+  );
+
+  // 横2列になった場合はフォームの折りたたみを解除して常時表示
+  if (resolvedLayout === "landscape") {
+    const formSection = document.getElementById("form-card-section");
+    const toggleBtn = document.getElementById("toggle-form-btn");
+    if (formSection && formSection.classList.contains("collapsed")) {
+      formSection.classList.remove("collapsed");
+      if (toggleBtn) {
+        toggleBtn.setAttribute("aria-expanded", "true");
+        toggleBtn.textContent = "▲ 条件を折りたたむ";
+      }
+    }
+  }
+
+  const labelEl = document.getElementById("detected-orientation-label");
+  if (labelEl) {
+    labelEl.textContent = statusText;
+  }
+}
 
 function getFormValues() {
   const form = document.getElementById("sim-form");
@@ -500,6 +560,16 @@ function renderResults() {
 
   document.getElementById("baseline-monthly").innerHTML = `¥${baselineMonthly.toLocaleString()}<span>/月</span>`;
   document.getElementById("best-monthly").innerHTML = `¥${best.totalEffectiveMonthly.toLocaleString()}<span>/月</span>`;
+
+  // スマホ縦画面の下部フローティングバー更新
+  const floatingCombo = document.getElementById("floating-best-combo");
+  const floatingPrice = document.getElementById("floating-best-price");
+  if (floatingCombo && floatingPrice) {
+    const shortNet = best.net.name.replace(/（.*?）/g, "");
+    const shortElec = best.elec.name.replace(/（.*?）/g, "");
+    floatingCombo.textContent = `${shortNet} × ${shortElec}`;
+    floatingPrice.textContent = `¥${best.totalEffectiveMonthly.toLocaleString()}`;
+  }
 
   const monthlyDiff = Math.max(0, baselineMonthly - best.totalEffectiveMonthly);
   const annualSaving = monthlyDiff * 12;
@@ -841,5 +911,51 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
+  // 画面レイアウト切り替えボタン（自動 / 縦1列 / 横2列）
+  const layoutBtns = document.querySelectorAll(".layout-mode-btn");
+  layoutBtns.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      layoutBtns.forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+      activeLayoutMode = btn.dataset.layout;
+      applyResponsiveLayout();
+    });
+  });
+
+  // 画面の回転・リサイズ時に自動で最適配置へ切り替え
+  window.addEventListener("resize", applyResponsiveLayout);
+  window.addEventListener("orientationchange", () => {
+    setTimeout(applyResponsiveLayout, 100);
+  });
+
+  // 縦画面での条件フォーム折りたたみボタン
+  const toggleFormBtn = document.getElementById("toggle-form-btn");
+  const formSection = document.getElementById("form-card-section");
+  if (toggleFormBtn && formSection) {
+    toggleFormBtn.addEventListener("click", () => {
+      const isCollapsed = formSection.classList.toggle("collapsed");
+      toggleFormBtn.setAttribute("aria-expanded", String(!isCollapsed));
+      toggleFormBtn.textContent = isCollapsed ? "▼ 条件を開く" : "▲ 条件を折りたたむ";
+    });
+  }
+
+  // 下部フローティングバーの「結果を見る / 条件へ戻る」ジャンプボタン
+  const jumpBtn = document.getElementById("floating-jump-btn");
+  if (jumpBtn) {
+    jumpBtn.addEventListener("click", () => {
+      const banner = document.getElementById("savings-banner");
+      if (!banner) return;
+      const rect = banner.getBoundingClientRect();
+      if (rect.top > 120) {
+        banner.scrollIntoView({ behavior: "smooth", block: "start" });
+        jumpBtn.textContent = "条件変更 ⬆️";
+      } else {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        jumpBtn.textContent = "結果を見る ⬇️";
+      }
+    });
+  }
+
+  applyResponsiveLayout();
   renderResults();
 });

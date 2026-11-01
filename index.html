@@ -17,15 +17,33 @@
       <p class="subtitle">
         光回線5社 × 電力6社（全30通りの組み合わせ）から、スマホセット割・電気ガスセット割・初年度特典まで加味して<strong>あなたの条件で最も実質負担が安い組み合わせ</strong>を自動算出します。
       </p>
+
+      <!-- 画面の縦横・デバイスに応じたレイアウト切替バー -->
+      <div class="layout-switcher-bar" role="region" aria-label="画面レイアウト切り替え">
+        <div class="layout-status">
+          <span class="status-dot"></span>
+          <span id="detected-orientation-label">画面判定中...</span>
+        </div>
+        <div class="layout-btn-group">
+          <button type="button" class="layout-mode-btn active" data-layout="auto">🔄 自動最適化（縦横連動）</button>
+          <button type="button" class="layout-mode-btn" data-layout="portrait">📱 縦1列（スマホ縦）</button>
+          <button type="button" class="layout-mode-btn" data-layout="landscape">📲 左右2列（横画面・PC）</button>
+        </div>
+      </div>
     </div>
   </header>
 
   <main class="container main-grid">
     <!-- 左カラム：入力フォーム -->
-    <section class="card form-section" aria-labelledby="form-heading">
-      <div class="section-header">
-        <span class="step-tag">STEP 1</span>
-        <h2 id="form-heading">現在の利用条件を入力</h2>
+    <section class="card form-section" id="form-card-section" aria-labelledby="form-heading">
+      <div class="section-header form-header-bar">
+        <div class="section-header-left">
+          <span class="step-tag">STEP 1</span>
+          <h2 id="form-heading">現在の利用条件を入力</h2>
+        </div>
+        <button type="button" class="collapse-form-btn" id="toggle-form-btn" aria-expanded="true">
+          ▲ 条件を折りたたむ
+        </button>
       </div>
 
       <form id="sim-form">
@@ -223,6 +241,21 @@
   <footer class="footer container">
     <p>※料金は関西エリア（関西電力管内）の2026年時点の主要プラン・公式キャンペーンをもとに算出したシミュレーション値（税込）です。燃料費調整額・再生可能エネルギー発電促進賦課金は各社共通基準として比較しています。</p>
   </footer>
+
+  <!-- スマホ・縦画面用の下部固定リアルタイム結果フローティングバー -->
+  <div class="mobile-floating-bar" id="mobile-floating-bar">
+    <div class="floating-bar-info">
+      <span class="floating-label">👑 現在の最安第1位コンビ</span>
+      <strong class="floating-combo" id="floating-best-combo">算出中...</strong>
+    </div>
+    <div class="floating-bar-right">
+      <div class="floating-price-box">
+        <span class="floating-price" id="floating-best-price">¥0</span>
+        <small>/月</small>
+      </div>
+      <button type="button" class="floating-jump-btn" id="floating-jump-btn">結果を見る ⬇️</button>
+    </div>
+  </div>
 
   <script src="app.js"></script>
 </body>
