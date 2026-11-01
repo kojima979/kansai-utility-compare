@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>関西 ネット回線×電気代 最安コンビ診断シミュレーター</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="hero">
+    <div class="container hero-inner">
+      <div class="hero-top-bar">
+        <div class="badge">関西エリア（大阪・京都・兵庫・滋賀・奈良・和歌山）専用</div>
+        <div class="survey-date">📅 調査実施日：2026年11月1日</div>
+      </div>
+      <h1>関西 インターネット通信 × 電気代<br/>コスパ最強コンビ比較シミュレーター</h1>
+      <p class="subtitle">
+        光回線5社 × 電力6社（全30通りの組み合わせ）から、スマホセット割・電気ガスセット割・初年度特典まで加味して<strong>あなたの条件で最も実質負担が安い組み合わせ</strong>を自動算出します。
+      </p>
+    </div>
+  </header>
+
+  <main class="container main-grid">
+    <!-- 左カラム：入力フォーム -->
+    <section class="card form-section" aria-labelledby="form-heading">
+      <div class="section-header">
+        <span class="step-tag">STEP 1</span>
+        <h2 id="form-heading">現在の利用条件を入力</h2>
+      </div>
+
+      <form id="sim-form">
+        <!-- 1. 住居形態 -->
+        <div class="form-group">
+          <label class="group-label">1. お住まいの住居形態</label>
+          <div class="segmented-control">
+            <label class="segment">
+              <input type="radio" name="housing" value="detached" checked />
+              <span>🏠 戸建て</span>
+            </label>
+            <label class="segment">
+              <input type="radio" name="housing" value="apartment" />
+              <span>🏢 マンション・集合住宅</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- 2. スマホキャリアと台数 -->
+        <div class="form-group">
+          <label class="group-label" for="carrier">2. スマホのキャリア（家族の主回線）</label>
+          <select id="carrier" name="carrier" class="select-input">
+            <option value="au_uq">au / UQモバイル（eo光でセット割対象）</option>
+            <option value="softbank_ym">ソフトバンク / ワイモバイル（NURO光・SB光でセット割対象）</option>
+            <option value="docomo">ドコモ（ドコモ光でセット割対象）</option>
+            <option value="mineo">mineo（eo光でセット割対象）</option>
+            <option value="none">格安SIM・ahamo・povo・楽天モバイル等（セット割なし）</option>
+          </select>
+          <div class="sub-control" id="phone-count-wrapper">
+            <label for="phoneCount">対象スマホ台数（家族合計）：<strong id="phoneCountLabel">2台</strong></label>
+            <input type="range" id="phoneCount" name="phoneCount" min="1" max="5" value="2" />
+            <div class="range-ticks">
+              <span>1台</span><span>2台</span><span>3台</span><span>4台</span><span>5台</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. 希望する通信速度 -->
+        <div class="form-group">
+          <label class="group-label">3. 希望するインターネット速度</label>
+          <div class="segmented-control">
+            <label class="segment">
+              <input type="radio" name="speed" value="1g" checked />
+              <span>⚡ 1ギガ（標準・コスパ重視）</span>
+            </label>
+            <label class="segment">
+              <input type="radio" name="speed" value="10g" />
+              <span>🚀 10ギガ（超高速・ゲーム・大容量）</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- 4. 毎月の電気使用量 -->
+        <div class="form-group">
+          <label class="group-label" for="kwh">4. 毎月の電気使用量（kWh）</label>
+          <div class="preset-buttons">
+            <button type="button" class="preset-btn" data-kwh="160">1人暮らし<br><small>約160kWh</small></button>
+            <button type="button" class="preset-btn" data-kwh="280">2人世帯<br><small>約280kWh</small></button>
+            <button type="button" class="preset-btn active" data-kwh="360">3人世帯<br><small>約360kWh</small></button>
+            <button type="button" class="preset-btn" data-kwh="480">4人以上<br><small>約480kWh</small></button>
+          </div>
+          <div class="sub-control">
+            <div class="kwh-display">
+              <span>月間使用量：</span>
+              <strong id="kwhLabel">360 kWh</strong>
+              <span class="muted" id="currentElecEst">（関電 従量電灯A目安：約9,220円/月）</span>
+            </div>
+            <input type="range" id="kwh" name="kwh" min="100" max="800" step="10" value="360" />
+            <div class="range-ticks">
+              <span>100kWh</span><span>300kWh</span><span>500kWh</span><span>800kWh</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 5. ガス契約状況 -->
+        <div class="form-group">
+          <label class="group-label" for="gas">5. 現在のガス・熱源契約</label>
+          <select id="gas" name="gas" class="select-input">
+            <option value="osaka_gas">大阪ガス（電気セット「ベースプランA-G」や関電ガス切替が可能）</option>
+            <option value="kanden_gas">関電ガス（関電・eo電気とセット割対象）</option>
+            <option value="other">プロパンガス（LPガス）・その他都市ガス</option>
+            <option value="all_denka">オール電化</option>
+          </select>
+        </div>
+
+        <!-- 6. 評価期間・キャンペーン考慮 -->
+        <div class="form-group">
+          <label class="group-label">6. コスパ比較の基準</label>
+          <div class="segmented-control">
+            <label class="segment">
+              <input type="radio" name="evalMode" value="2year_effective" checked />
+              <span>🎁 2年間の実質月額（初年度割・特典込み）</span>
+            </label>
+            <label class="segment">
+              <input type="radio" name="evalMode" value="steady_state" />
+              <span>📅 2年目以降の通常月額（ずっと使う場合）</span>
+            </label>
+          </div>
+        </div>
+      </form>
+    </section>
+
+    <!-- 右カラム：診断結果・ランキング -->
+    <section class="results-section" aria-labelledby="result-heading">
+      <!-- 現在の基準コストと最大削減額バナー -->
+      <div class="savings-banner" id="savings-banner">
+        <div class="savings-header">
+          <span class="step-tag">STEP 2</span>
+          <h2 id="result-heading">あなたに最もコスパが良い組み合わせ</h2>
+        </div>
+        <div class="savings-grid">
+          <div class="saving-box baseline">
+            <span class="box-label">一般的な基準（フレッツ系光＋関西電力 従量電灯A）</span>
+            <div class="box-price" id="baseline-monthly">¥14,940<span>/月</span></div>
+          </div>
+          <div class="saving-arrow">➔</div>
+          <div class="saving-box best">
+            <span class="box-label">最安コンビの実質負担（スマホ割・セット割反映後）</span>
+            <div class="box-price" id="best-monthly">¥9,850<span>/月</span></div>
+          </div>
+        </div>
+        <div class="annual-saving-pill" id="annual-saving-pill">
+          年間で <strong>約 ¥61,080</strong>（2年間で <strong>約 ¥122,160</strong>）お得になります！
+        </div>
+      </div>
+
+      <!-- TOP 10 ランキング（スクロール表示） -->
+      <div class="ranking-wrapper card">
+        <div class="ranking-wrapper-header">
+          <h3>🏆 コスパ順ベスト10 ランキング（全30通り中）</h3>
+          <span class="scroll-hint">⬇️ 下にスクロールして4位〜10位を確認できます</span>
+        </div>
+        <div id="ranking-container" class="ranking-list"></div>
+      </div>
+
+      <!-- 全業者単体データ一覧（折りたたみ・タブ） -->
+      <div class="card provider-matrix-card">
+        <h3>📊 調査済み・関西エリア主要事業者の料金データ一覧</h3>
+        <p class="matrix-desc">現在の入力条件（住居・速度・電気使用量）における各社の単体料金内訳です。</p>
+        <div class="matrix-tabs">
+          <button type="button" class="tab-btn active" data-tab="internet">🌐 光回線（5社比較）</button>
+          <button type="button" class="tab-btn" data-tab="electricity">💡 電力会社（6社比較）</button>
+        </div>
+        <div class="table-responsive">
+          <table class="comparison-table" id="matrix-table">
+            <!-- JSで動的描画 -->
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ページ末尾：全30パターン比較グラフセクション -->
+  <section class="container all-patterns-section" aria-labelledby="chart-heading">
+    <div class="card chart-card">
+      <div class="chart-header">
+        <div>
+          <span class="step-tag">STEP 3</span>
+          <h2 id="chart-heading">📈 全30パターン（光5社 × 電気6社）料金比較グラフ</h2>
+          <p class="matrix-desc">
+            現在の入力条件における<strong>全30通りの月額実質負担（ネット実質＋電気代実質）</strong>をグラフ化しています。棒の長さでトータルコストと内訳を一目で比較できます。
+          </p>
+        </div>
+        <div class="chart-controls">
+          <button type="button" class="chart-sort-btn active" data-sort="rank">🏆 安い順（1位〜30位）</button>
+          <button type="button" class="chart-sort-btn" data-sort="provider">🌐 光回線グループ順</button>
+        </div>
+      </div>
+
+      <!-- 凡例 -->
+      <div class="chart-legend">
+        <div class="legend-item">
+          <span class="legend-swatch net-swatch"></span>
+          <span>🌐 光回線 実質月額（スマホ割・必須OP差引後）</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-swatch elec-swatch"></span>
+          <span>💡 電気代 実質月額（ガス・電気セット割反映後）</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-swatch bundle-swatch"></span>
+          <span>⚡ ネット×電気 直接セット割あり（eo光×eo電気 / SB光×おうちでんき）</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-line-sample"></span>
+          <span id="chart-baseline-legend">基準額（標準光＋関電従量電灯A）</span>
+        </div>
+      </div>
+
+      <!-- 全30パターン横棒積み上げグラフ -->
+      <div id="all-patterns-chart" class="bar-chart-container"></div>
+    </div>
+  </section>
+
+  <footer class="footer container">
+    <p>※料金は関西エリア（関西電力管内）の2026年時点の主要プラン・公式キャンペーンをもとに算出したシミュレーション値（税込）です。燃料費調整額・再生可能エネルギー発電促進賦課金は各社共通基準として比較しています。</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
