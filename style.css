@@ -26,6 +26,8 @@ body {
   background-color: var(--bg);
   color: var(--text-main);
   line-height: 1.6;
+  overflow-x: hidden;
+  width: 100%;
 }
 
 .container {
@@ -153,10 +155,133 @@ body {
   align-items: start;
 }
 
-/* 縦画面モード（1カラム配置） */
+/* 縦画面モード（1カラム配置：画面横幅めいっぱいに100%統一） */
+body.layout-portrait .container {
+  width: 100%;
+  max-width: 100%;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
 body.layout-portrait .main-grid {
-  grid-template-columns: 1fr;
-  gap: 18px;
+  grid-template-columns: minmax(0, 1fr);
+  width: 100%;
+  gap: 16px;
+}
+
+body.layout-portrait .form-section,
+body.layout-portrait .results-section,
+body.layout-portrait .savings-banner,
+body.layout-portrait .ranking-wrapper,
+body.layout-portrait .rank-card,
+body.layout-portrait .provider-matrix-card,
+body.layout-portrait .all-patterns-section,
+body.layout-portrait .chart-card {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  margin-left: 0;
+  margin-right: 0;
+  box-sizing: border-box;
+}
+
+body.layout-portrait .card,
+body.layout-portrait .savings-banner,
+body.layout-portrait .ranking-wrapper,
+body.layout-portrait .provider-matrix-card,
+body.layout-portrait .chart-card {
+  padding-left: 14px;
+  padding-right: 14px;
+}
+
+body.layout-portrait .source-link {
+  white-space: normal;
+  word-break: break-word;
+}
+
+body.layout-portrait .ranking-list {
+  padding-right: 0;
+  width: 100%;
+}
+
+body.layout-portrait .savings-grid {
+  grid-template-columns: minmax(0, 1fr);
+  width: 100%;
+}
+
+body.layout-portrait .saving-arrow {
+  transform: rotate(90deg);
+  text-align: center;
+  margin: -4px 0;
+}
+
+body.layout-portrait .saving-box,
+body.layout-portrait .annual-saving-pill,
+body.layout-portrait .breakdown-grid,
+body.layout-portrait .breakdown-item,
+body.layout-portrait .sources-box,
+body.layout-portrait .source-list,
+body.layout-portrait .source-item {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
+body.layout-portrait .breakdown-grid {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+body.layout-portrait .rank-header {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+body.layout-portrait .combo-total {
+  width: 100%;
+  text-align: right;
+  background: #f8fafc;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+body.layout-portrait .matrix-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  width: 100%;
+}
+
+body.layout-portrait .tab-btn {
+  width: 100%;
+  text-align: center;
+}
+
+body.layout-portrait .chart-controls {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  width: 100%;
+}
+
+body.layout-portrait .chart-sort-btn {
+  width: 100%;
+  text-align: center;
+}
+
+body.layout-portrait .chart-row {
+  grid-template-columns: 54px minmax(0, 1fr) auto;
+  gap: 8px;
+  width: 100%;
+}
+
+body.layout-portrait .chart-bar-track-wrap {
+  grid-column: 1 / -1;
+  width: 100%;
+}
+
+body.layout-portrait .chart-price-col {
+  grid-column: 3 / 4;
+  grid-row: 1 / 2;
+  text-align: right !important;
 }
 
 /* 横画面モード（スマホ横・タブレット・PCすべて左右2列スプリット配置） */
