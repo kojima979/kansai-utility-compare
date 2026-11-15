@@ -33,7 +33,23 @@ const INTERNET_PROVIDERS = [
         sourceTitle: "eo光公式：eo×mineoセット割"
       }
     },
-    highlights: ["関西シェア・満足度No.1独自回線", "au/UQモバイル・mineoセット割対応", "eo電気とのセット割あり"]
+    highlights: ["関西シェア・満足度No.1独自回線", "au/UQモバイル・mineoセット割対応", "eo電気とのセット割あり"],
+    calcPoint: (effectiveNetMonthly, context) => {
+      const isEoElec = context.electricityId === "eo_elec";
+      const pts = isEoElec ? 250 : 85;
+      return {
+        pointMonthly: pts,
+        pointName: "eoポイント",
+        pointNote: isEoElec
+          ? "eoプレミアムクラブ（eo電気セット等でシルバー相当：月250pt／OP・mineo等充当可）"
+          : "eoプレミアムクラブ（レギュラー：月85pt／OP・mineo等充当可）",
+        pointSource: {
+          label: `eoプレミアムクラブ「eoポイント」（${isEoElec ? "eo電気セット等 250pt" : "通常 85pt"}/月）`,
+          url: "https://eonet.jp/premium/",
+          title: "eo光公式：eoプレミアムクラブ（eoポイント）"
+        }
+      };
+    }
   },
   {
     id: "nuro",
@@ -59,7 +75,13 @@ const INTERNET_PROVIDERS = [
         sourceTitle: "NURO光公式：おうち割 光セット（要NURO光でんわ）"
       }
     },
-    highlights: ["NURO光でんわ加入でSB/ワイモバイルのスマホ割対応", "高額キャッシュバックで2年実質が安価", "※大阪ガスの電気とのネット×電気セット割はなし"]
+    highlights: ["NURO光でんわ加入でSB/ワイモバイルのスマホ割対応", "高額キャッシュバックで2年実質が安価", "※大阪ガスの電気とのネット×電気セット割はなし"],
+    calcPoint: () => ({
+      pointMonthly: 0,
+      pointName: "なし",
+      pointNote: "公式の毎月の定常ポイント還元制度なし（高額キャッシュバックで還元）",
+      pointSource: null
+    })
   },
   {
     id: "gmo",
@@ -77,7 +99,13 @@ const INTERNET_PROVIDERS = [
       }
     },
     phoneDiscount: {},
-    highlights: ["格安SIM（楽天・ahamo・povo）ユーザー最安級", "解約違約金0円・高性能ルーター無料レンタル", "基本月額が業界最安水準"]
+    highlights: ["格安SIM（楽天・ahamo・povo）ユーザー最安級", "解約違約金0円・高性能ルーター無料レンタル", "基本月額が業界最安水準"],
+    calcPoint: () => ({
+      pointMonthly: 0,
+      pointName: "なし",
+      pointNote: "公式の毎月の定常ポイント還元制度なし（月額割引＋キャッシュバック型）",
+      pointSource: null
+    })
   },
   {
     id: "docomo",
@@ -103,7 +131,21 @@ const INTERNET_PROVIDERS = [
         sourceTitle: "NTTドコモ公式：ドコモ光セット割"
       }
     },
-    highlights: ["ドコモユーザーの唯一のセット割対象回線（オプション加入不要）", "家族のドコモ回線が多いほどお得", "全国エリア・マンション導入率No.1"]
+    highlights: ["ドコモユーザーの唯一のセット割対象回線（オプション加入不要）", "家族のドコモ回線が多いほどお得", "全国エリア・マンション導入率No.1"],
+    calcPoint: (effectiveNetMonthly) => {
+      const exTax = Math.round(effectiveNetMonthly / 1.1);
+      const pts = Math.floor(exTax / 1000) * 10;
+      return {
+        pointMonthly: pts,
+        pointName: "dポイント",
+        pointNote: "dポイント還元（税抜1,000円につき10pt＝1%／携帯料金等に充当可 ※dカードGOLD等なら最大10%）",
+        pointSource: {
+          label: `ドコモ光 dポイント基本還元（税抜1,000円につき10pt＝月${pts.toLocaleString()}pt相当）`,
+          url: "https://www.docomo.ne.jp/charge/hikari_set/",
+          title: "NTTドコモ公式：ドコモ光（dポイント還元）"
+        }
+      };
+    }
   },
   {
     id: "softbank",
@@ -129,9 +171,24 @@ const INTERNET_PROVIDERS = [
         sourceTitle: "ソフトバンク公式：おうち割 光セット"
       }
     },
-    highlights: ["ソフトバンク純正光コラボ・おうちでんきともセット割対応", "他社違約金最大10万円満額還元キャンペーン", "NTTフレッツ網でどのマンションでも導入しやすい"]
+    highlights: ["ソフトバンク純正光コラボ・おうちでんきともセット割対応", "他社違約金最大10万円満額還元キャンペーン", "NTTフレッツ網でどのマンションでも導入しやすい"],
+    calcPoint: () => ({
+      pointMonthly: 0,
+      pointName: "なし",
+      pointNote: "基本利用のみでの定常ポイント還元なし（※PayPayカードゴールド決済時等を除く）",
+      pointSource: null
+    })
   }
 ];
+
+// 関西電力「従量電灯A」準拠の電気料金算定ヘルパー
+function calcKandenStandardBill(kwh) {
+  let bill = 522.58;
+  if (kwh > 15) bill += Math.min(kwh - 15, 105) * 20.21;
+  if (kwh > 120) bill += Math.min(kwh - 120, 180) * 25.61;
+  if (kwh > 300) bill += (kwh - 300) * 28.59;
+  return bill;
+}
 
 const ELECTRICITY_PROVIDERS = [
   {
@@ -140,10 +197,7 @@ const ELECTRICITY_PROVIDERS = [
     officialUrl: "https://kepco.jp/ryokin/menu/dento_a/",
     planName: "従量電灯A（関電ガスセット時：なっトクでんき）",
     calcMonthly: (kwh, context) => {
-      let bill = 522.58;
-      if (kwh > 15) bill += Math.min(kwh - 15, 105) * 20.21;
-      if (kwh > 120) bill += Math.min(kwh - 120, 180) * 25.61;
-      if (kwh > 300) bill += (kwh - 300) * 28.59;
+      const bill = calcKandenStandardBill(kwh);
       let bundleDiscount = 0;
       let bundleNote = "";
       let discountSource = null;
@@ -156,10 +210,21 @@ const ELECTRICITY_PROVIDERS = [
           title: "関西電力公式：関電ガス なっトクプラン"
         };
       }
+      const rawBill = Math.round(bill);
+      const billed = Math.max(0, rawBill - bundleDiscount);
+      const pointMonthly = billed >= 1000 ? Math.floor(billed / 1000) * 8 : 0;
       return {
-        rawBill: Math.round(bill),
+        rawBill,
         bundleDiscount,
         promoMonthlyDiscount: 0,
+        pointMonthly,
+        pointName: "はぴeポイント",
+        pointNote: "はぴeみる電で毎月確認時：電気料金1,000円（税込）につき8pt還元",
+        pointSource: {
+          label: `はぴeポイント（税込1,000円につき8pt＝月${pointMonthly.toLocaleString()}pt相当）`,
+          url: "https://kepco.jp/miruden/",
+          title: "関西電力公式：はぴeみる電・はぴeポイント"
+        },
         note: bundleNote || "関西エリアの標準基準プラン（ネット・スマホとのセット割なし）",
         discountSource
       };
@@ -201,6 +266,12 @@ const ELECTRICITY_PROVIDERS = [
         rawBill: Math.round(bill),
         bundleDiscount,
         promoMonthlyDiscount: isEoNet ? 200 : 0,
+        pointMonthly: 0,
+        pointName: "eoポイント（ネット側統合）",
+        pointNote: isEoNet
+          ? "eo光とセット時はeo光側「eoプレミアムクラブ」（月250pt）のランクアップに統合"
+          : "eo電気単体でのポイント還元なし（eo光とセットでeoポイント優遇）",
+        pointSource: null,
         note: notes.length ? notes.join("＋") : "※eo光以外のネット回線とはセット割なし",
         discountSource
       };
@@ -234,6 +305,10 @@ const ELECTRICITY_PROVIDERS = [
         rawBill: Math.round(bill),
         bundleDiscount,
         promoMonthlyDiscount: 0,
+        pointMonthly: 0,
+        pointName: "マイ大阪ガスポイント",
+        pointNote: "料金連動の自動還元はなし（※マイ大阪ガスアプリ確認やセット特典等で別途付与あり）",
+        pointSource: null,
         note: hasOsakaGas
           ? "大阪ガス（都市ガス）とのセット「ベースプランA-G」適用（※NURO光やSBスマホとの電気セット割はありません）"
           : "第2段階が350kWhまで広いプラン（※光回線・スマホとのセット割はありません）",
@@ -256,6 +331,10 @@ const ELECTRICITY_PROVIDERS = [
         rawBill: Math.round(bill),
         bundleDiscount: 0,
         promoMonthlyDiscount: 0,
+        pointMonthly: 0,
+        pointName: "なし",
+        pointNote: "独自のポイント制度なし（基本・従量単価を低く設定）",
+        pointSource: null,
         note: "セット割なし（単体の基本単価・従量単価自体が関西電力より安い設計）",
         discountSource: {
           label: "セット条件なしで全段階単価が関電より割安（単体割引型）",
@@ -280,6 +359,10 @@ const ELECTRICITY_PROVIDERS = [
         rawBill: Math.round(bill),
         bundleDiscount: 0,
         promoMonthlyDiscount: 290,
+        pointMonthly: 0,
+        pointName: "なし",
+        pointNote: "標準プランはポイント制度なし（※楽天ポイントが貯まる「ポイントオクトパス-R」別設定あり）",
+        pointSource: null,
         note: "セット割なし（単体単価の安さ＋公式新規申込の電気代割引特典）",
         discountSource: {
           label: "公式新規申込キャンペーン特典（電気代割引 約¥7,000＝月▲¥290換算）",
@@ -296,10 +379,7 @@ const ELECTRICITY_PROVIDERS = [
     officialUrl: "https://www.softbank.jp/energy/special/ouchi-denki/",
     planName: "おうちでんき Powered by 関西電力 / (N)",
     calcMonthly: (kwh, context) => {
-      let bill = 522.58;
-      if (kwh > 15) bill += Math.min(kwh - 15, 105) * 20.21;
-      if (kwh > 120) bill += Math.min(kwh - 120, 180) * 25.61;
-      if (kwh > 300) bill += (kwh - 300) * 28.59;
+      const bill = calcKandenStandardBill(kwh);
 
       const unitDiscount = context.evalMode === "steady_state" ? 55 : 110;
       let eligibleLines = 0;
@@ -327,6 +407,10 @@ const ELECTRICITY_PROVIDERS = [
         rawBill: Math.round(bill),
         bundleDiscount,
         promoMonthlyDiscount: 0,
+        pointMonthly: 0,
+        pointName: "なし",
+        pointNote: "毎月の料金連動の定常ポイント還元なし（※PayPayカード決済・YM連携キャンペーン等は除く）",
+        pointSource: null,
         note:
           bundleDiscount > 0
             ? `おうち割 でんきセット適用（${notes.join("＋")}＝月▲¥${bundleDiscount.toLocaleString()}）`
@@ -335,6 +419,73 @@ const ELECTRICITY_PROVIDERS = [
       };
     },
     feature: "ソフトバンク光やSB/ワイモバイルスマホと組み合わせると「おうち割 でんきセット（1回線あたり月110円割引）」が適用。"
+  },
+  {
+    id: "docomo_denki",
+    name: "ドコモでんき（Basic）",
+    officialUrl: "https://denki.docomo.ne.jp/",
+    planName: "ドコモでんき Basic（関西電力エリア）",
+    calcMonthly: (kwh, context) => {
+      const bill = calcKandenStandardBill(kwh);
+      const rawBill = Math.round(bill);
+      const exTaxBill = Math.round(bill / 1.1);
+      const isDocomoUser = context.carrier === "docomo";
+      const rate = isDocomoUser ? 0.02 : 0.01;
+      const pointMonthly = Math.round(exTaxBill * rate);
+      return {
+        rawBill,
+        bundleDiscount: 0,
+        promoMonthlyDiscount: 0,
+        pointMonthly,
+        pointName: "dポイント",
+        pointNote: isDocomoUser
+          ? "ドコモ回線＋dカード利用時目安：税抜電気料金の2%（dポイント還元／携帯料金等に充当可）"
+          : "dアカウント連携時の基本還元：税抜電気料金の1%（dポイント還元）",
+        pointSource: {
+          label: `ドコモでんき dポイント還元（${isDocomoUser ? "ドコモ回線+dカード 2%" : "基本 1%"}＝月${pointMonthly.toLocaleString()}pt相当）`,
+          url: "https://denki.docomo.ne.jp/",
+          title: "ドコモでんき公式：料金プラン・dポイント還元"
+        },
+        note: "関西電力従量電灯Aと同等単価（電気代直接値引きではなくdポイントで還元）",
+        discountSource: null
+      };
+    },
+    feature: "ドコモが提供する電力サービス。基本料金・電力量単価は関電従量電灯Aと同等で、毎月の電気料金に応じたdポイント還元（携帯料金等に充当可）が魅力。"
+  },
+  {
+    id: "au_denki",
+    name: "auでんき（でんきMプラン 関西）",
+    officialUrl: "https://www.au.com/denki/",
+    planName: "でんきMプラン（関西）",
+    calcMonthly: (kwh, context) => {
+      const bill = calcKandenStandardBill(kwh);
+      const rawBill = Math.round(bill);
+      const exTaxBill = Math.round(bill / 1.1);
+      const isAuUser = context.carrier === "au_uq";
+      const rate = isAuUser ? (exTaxBill >= 8000 ? 0.01 : 0.005) : 0;
+      const pointMonthly = Math.round(exTaxBill * rate);
+      const ratePctText = exTaxBill >= 8000 ? "1.0%" : "0.5%";
+      return {
+        rawBill,
+        bundleDiscount: 0,
+        promoMonthlyDiscount: 0,
+        pointMonthly,
+        pointName: isAuUser ? "Pontaポイント" : "対象外（要au/UQ回線）",
+        pointNote: isAuUser
+          ? `auでんきポイントで割引（税抜8,000円${exTaxBill >= 8000 ? "以上 1.0%" : "未満 0.5%"} Ponta還元／携帯料金等に充当可）`
+          : "※Pontaポイント還元はauまたはUQモバイル回線（au ID連携）が必須条件",
+        pointSource: isAuUser
+          ? {
+              label: `auでんき Pontaポイント還元（${ratePctText}＝月${pointMonthly.toLocaleString()}pt相当）`,
+              url: "https://www.au.com/denki/merit/point/",
+              title: "auでんき公式：Pontaポイント還元（auでんきポイントで割引）"
+            }
+          : null,
+        note: "関西電力従量電灯Aと同等単価（au/UQ回線連携でPontaポイント自動還元）",
+        discountSource: null
+      };
+    },
+    feature: "KDDI提供の電力サービス。料金単価は関電従量電灯Aと同等で、au/UQモバイルユーザーは毎月の電気代に応じてPontaポイントが自動還元されます。"
   }
 ];
 
@@ -410,10 +561,11 @@ function getFormValues() {
   const kwh = parseInt(form.elements["kwh"].value, 10);
   const gas = form.elements["gas"].value;
   const evalMode = form.elements["evalMode"].value;
-  return { housing, carrier, phoneCount, speed, kwh, gas, evalMode };
+  const includePoints = form.elements["includePoints"] ? form.elements["includePoints"].value : "include";
+  return { housing, carrier, phoneCount, speed, kwh, gas, evalMode, includePoints };
 }
 
-function calcInternetCost(provider, state) {
+function calcInternetCost(provider, state, electricityId = "") {
   const plan = provider.pricing[state.housing][state.speed];
   let netMonthly = plan.year2;
   let promoSavingMonthly = 0;
@@ -447,6 +599,10 @@ function calcInternetCost(provider, state) {
     }
   }
 
+  const pointRes = provider.calcPoint
+    ? provider.calcPoint(netMonthly, { electricityId, carrier: state.carrier })
+    : { pointMonthly: 0, pointName: "なし", pointNote: "", pointSource: null };
+
   return {
     baseYear1: plan.year1,
     baseYear2: plan.year2,
@@ -458,6 +614,10 @@ function calcInternetCost(provider, state) {
     phoneDiscountMonthly,
     phoneDiscountLabel,
     phoneSource,
+    pointMonthly: pointRes.pointMonthly || 0,
+    pointName: pointRes.pointName || "なし",
+    pointNote: pointRes.pointNote || "",
+    pointSource: pointRes.pointSource || null,
     note: plan.note
   };
 }
@@ -477,6 +637,10 @@ function calcElectricityCost(elecProvider, state, internetId) {
     bundleDiscount: res.bundleDiscount,
     promoMonthlyDiscount: promo,
     effectiveElecMonthly,
+    pointMonthly: res.pointMonthly || 0,
+    pointName: res.pointName || "なし",
+    pointNote: res.pointNote || "",
+    pointSource: res.pointSource || null,
     note: res.note,
     discountSource: res.discountSource
   };
@@ -484,18 +648,26 @@ function calcElectricityCost(elecProvider, state, internetId) {
 
 function evaluateAllCombinations(state) {
   const combos = [];
+  const isPointIncluded = state.includePoints === "include";
 
   for (const net of INTERNET_PROVIDERS) {
-    const netCost = calcInternetCost(net, state);
     for (const elec of ELECTRICITY_PROVIDERS) {
+      const netCost = calcInternetCost(net, state, elec.id);
       const elecCost = calcElectricityCost(elec, state, net.id);
+      const totalPointMonthly = netCost.pointMonthly + elecCost.pointMonthly;
+      const appliedPointDiscount = isPointIncluded ? totalPointMonthly : 0;
+
       const totalEffectiveMonthly =
-        netCost.effectiveNetMonthly - netCost.phoneDiscountMonthly + elecCost.effectiveElecMonthly;
+        netCost.effectiveNetMonthly -
+        netCost.phoneDiscountMonthly +
+        elecCost.effectiveElecMonthly -
+        appliedPointDiscount;
 
       const totalDiscountMonthly =
         netCost.phoneDiscountMonthly +
         elecCost.bundleDiscount +
-        elecCost.promoMonthlyDiscount;
+        elecCost.promoMonthlyDiscount +
+        appliedPointDiscount;
 
       // ネットと電気の直接セット割があるかどうか
       const hasNetElecDirectBundle =
@@ -519,6 +691,13 @@ function evaluateAllCombinations(state) {
       ) {
         tags.push(`🔥 ガス×電気セット割 ▲¥${elecCost.bundleDiscount.toLocaleString()}/月`);
       }
+      if (totalPointMonthly > 0) {
+        tags.push(
+          isPointIncluded
+            ? `🪙 ポイント還元 ▲¥${totalPointMonthly.toLocaleString()}/月`
+            : `🪙 獲得ポイント目安 ${totalPointMonthly.toLocaleString()}pt/月（除外中）`
+        );
+      }
       if (state.evalMode === "2year_effective" && netCost.cashback > 0) {
         tags.push(`🎁 光回線CB ¥${netCost.cashback.toLocaleString()}`);
       }
@@ -529,6 +708,8 @@ function evaluateAllCombinations(state) {
         netCost,
         elecCost,
         hasNetElecDirectBundle,
+        totalPointMonthly,
+        appliedPointDiscount,
         totalEffectiveMonthly,
         totalDiscountMonthly,
         tags
@@ -593,7 +774,10 @@ function renderResults() {
           ? "🥉 第3位"
           : `第${rank}位（1位との差 +¥${(item.totalEffectiveMonthly - best.totalEffectiveMonthly).toLocaleString()}/月）`;
       const tagsHtml = item.tags
-        .map((t) => `<span class="tag ${t.includes("セット") ? "green" : ""}">${t}</span>`)
+        .map((t) => {
+          const cls = t.includes("ポイント") ? "point" : t.includes("セット") ? "green" : "";
+          return `<span class="tag ${cls}">${t}</span>`;
+        })
         .join("");
 
       // 割引情報ソースリストの組み立て
@@ -649,6 +833,42 @@ function renderResults() {
         `);
       }
 
+      // 5. 公式ポイント還元のソース（ネット・電気）
+      if (item.netCost.pointSource) {
+        sourceItems.push(`
+          <li class="source-item">
+            <span>🪙 <strong>ネット側ポイント：</strong>${item.netCost.pointSource.label}</span>
+            <a class="source-link" href="${item.netCost.pointSource.url}" target="_blank" rel="noopener noreferrer">🔗 ${item.netCost.pointSource.title} ↗</a>
+          </li>
+        `);
+      }
+      if (item.elecCost.pointSource) {
+        sourceItems.push(`
+          <li class="source-item">
+            <span>🪙 <strong>電気側ポイント：</strong>${item.elecCost.pointSource.label}</span>
+            <a class="source-link" href="${item.elecCost.pointSource.url}" target="_blank" rel="noopener noreferrer">🔗 ${item.elecCost.pointSource.title} ↗</a>
+          </li>
+        `);
+      }
+
+      const isPointIncluded = state.includePoints === "include";
+      const pointParts = [];
+      if (item.netCost.pointMonthly > 0) {
+        pointParts.push(`ネット ${item.netCost.pointName} ${item.netCost.pointMonthly.toLocaleString()}pt`);
+      }
+      if (item.elecCost.pointMonthly > 0) {
+        pointParts.push(`電気 ${item.elecCost.pointName} ${item.elecCost.pointMonthly.toLocaleString()}pt`);
+      }
+      const pointSubText = pointParts.length
+        ? pointParts.join(" ＋ ")
+        : "公式の定常ポイント還元なし（単価・直接割引型）";
+      const pointValText =
+        item.totalPointMonthly > 0
+          ? isPointIncluded
+            ? `-¥${item.totalPointMonthly.toLocaleString()}/月`
+            : `除外中（+${item.totalPointMonthly.toLocaleString()}pt）`
+          : "0pt（なし）";
+
       return `
         <article class="rank-card rank-${rank}">
           <div class="rank-header">
@@ -657,7 +877,7 @@ function renderResults() {
               <h3 class="combo-name">${item.net.name} × ${item.elec.name}</h3>
             </div>
             <div class="combo-total">
-              <span class="total-label">${state.evalMode === "2year_effective" ? "ネット＋電気 実質月額合計" : "ネット＋電気 2年目以降月額合計"}</span>
+              <span class="total-label">${state.evalMode === "2year_effective" ? "ネット＋電気 実質月額合計" : "ネット＋電気 2年目以降月額合計"}${isPointIncluded ? "（ポイント込）" : ""}</span>
               <div class="total-value">¥${item.totalEffectiveMonthly.toLocaleString()}<small>/月（税込）</small></div>
             </div>
           </div>
@@ -677,6 +897,11 @@ function renderResults() {
               <span class="item-title">📱 光×スマホセット割（必須OP差引後）</span>
               <div class="item-val">${item.netCost.phoneDiscountMonthly > 0 ? `-¥${item.netCost.phoneDiscountMonthly.toLocaleString()}/月` : "¥0（対象外）"}</div>
               <span class="item-sub">${item.netCost.phoneDiscountLabel}</span>
+            </div>
+            <div class="breakdown-item point">
+              <span class="item-title">🪙 公式ポイント還元（1pt＝1円換算）</span>
+              <div class="item-val">${pointValText}</div>
+              <span class="item-sub">${pointSubText}</span>
             </div>
           </div>
 
@@ -735,10 +960,11 @@ function renderAllPatternsChart(combos, baselineMonthly, bestTotal) {
     .map((item) => {
       const netAfterPhone = Math.max(0, item.netCost.effectiveNetMonthly - item.netCost.phoneDiscountMonthly);
       const elecNet = Math.max(0, item.elecCost.effectiveElecMonthly);
+      const grossTotal = netAfterPhone + elecNet;
       const total = item.totalEffectiveMonthly;
 
       const totalWidthPct = Math.min(100, (total / maxCost) * 100);
-      const netSharePct = total > 0 ? (netAfterPhone / total) * 100 : 50;
+      const netSharePct = grossTotal > 0 ? (netAfterPhone / grossTotal) * 100 : 50;
       const elecSharePct = 100 - netSharePct;
 
       const diffFromBest = total - bestTotal;
@@ -762,6 +988,11 @@ function renderAllPatternsChart(combos, baselineMonthly, bestTotal) {
         subNotes.push(`⚡ネット×電気セット割`);
       } else if (item.elecCost.bundleDiscount > 0) {
         subNotes.push(`ガス×電気割▲¥${item.elecCost.bundleDiscount.toLocaleString()}`);
+      }
+      if (item.appliedPointDiscount > 0) {
+        subNotes.push(`🪙ポイント▲¥${item.appliedPointDiscount.toLocaleString()}`);
+      } else if (item.totalPointMonthly > 0) {
+        subNotes.push(`🪙参考${item.totalPointMonthly.toLocaleString()}pt`);
       }
 
       return `
@@ -796,13 +1027,22 @@ function renderAllPatternsChart(combos, baselineMonthly, bestTotal) {
 
 function renderMatrixTable(state, kandenBase) {
   const table = document.getElementById("matrix-table");
+  const isPointIncluded = state.includePoints === "include";
+
   if (activeMatrixTab === "internet") {
     const rows = INTERNET_PROVIDERS.map((p) => {
-      const c = calcInternetCost(p, state);
-      const afterPhone = c.effectiveNetMonthly - c.phoneDiscountMonthly;
+      const c = calcInternetCost(p, state, p.id === "eo" ? "eo_elec" : "");
+      const appliedPoint = isPointIncluded ? c.pointMonthly : 0;
+      const afterAll = c.effectiveNetMonthly - c.phoneDiscountMonthly - appliedPoint;
       const sourceLink = c.phoneSource
         ? `<a class="source-link" href="${c.phoneSource.url}" target="_blank" rel="noopener noreferrer">🔗 割引条件ソース ↗</a>`
+        : c.pointSource
+        ? `<a class="source-link" href="${c.pointSource.url}" target="_blank" rel="noopener noreferrer">🔗 ポイント公式 ↗</a>`
         : `<a class="source-link" href="${p.officialUrl}" target="_blank" rel="noopener noreferrer">🔗 公式料金 ↗</a>`;
+      const pointCell =
+        c.pointMonthly > 0
+          ? `<span style="color:#b45309;font-weight:700;">${c.pointMonthly.toLocaleString()}pt/月</span><br><small style="color:#64748b">${c.pointName}</small>`
+          : `<span style="color:#94a3b8;">なし</span>`;
       return `
         <tr>
           <td>
@@ -815,7 +1055,8 @@ function renderMatrixTable(state, kandenBase) {
           <td style="color:#dc2626;font-weight:700;">
             ${c.phoneDiscountMonthly > 0 ? `-¥${c.phoneDiscountMonthly.toLocaleString()}/月<br><small style="color:#64748b;font-weight:400;">(必須OP ¥${c.requiredOptionFee}差引済)</small>` : "対象外"}
           </td>
-          <td style="font-weight:800;color:#1d4ed8;">¥${afterPhone.toLocaleString()}/月</td>
+          <td>${pointCell}</td>
+          <td style="font-weight:800;color:#1d4ed8;">¥${afterAll.toLocaleString()}/月</td>
           <td>${sourceLink}</td>
         </tr>
       `;
@@ -829,7 +1070,8 @@ function renderMatrixTable(state, kandenBase) {
           <th>2年目以降</th>
           <th>キャッシュバック</th>
           <th>スマホ割（必須OP差引後）</th>
-          <th>スマホ割後の実質月額</th>
+          <th>公式ポイント還元</th>
+          <th>実質月額${isPointIncluded ? "（ポイント込）" : ""}</th>
           <th>公式情報ソース</th>
         </tr>
       </thead>
@@ -839,16 +1081,23 @@ function renderMatrixTable(state, kandenBase) {
     const rows = ELECTRICITY_PROVIDERS.map((e) => {
       const sampleNetId = e.id === "softbank_elec" ? "softbank" : "eo";
       const c = calcElectricityCost(e, state, sampleNetId);
-      const diff = kandenBase - c.effectiveElecMonthly;
-      const sourceUrl = c.discountSource ? c.discountSource.url : e.officialUrl;
+      const appliedPoint = isPointIncluded ? c.pointMonthly : 0;
+      const effectiveAfterPoint = c.effectiveElecMonthly - appliedPoint;
+      const diff = kandenBase - effectiveAfterPoint;
+      const sourceUrl = c.pointSource ? c.pointSource.url : c.discountSource ? c.discountSource.url : e.officialUrl;
+      const pointCell =
+        c.pointMonthly > 0
+          ? `<span style="color:#b45309;font-weight:700;">${c.pointMonthly.toLocaleString()}pt/月</span><br><small style="color:#64748b">${c.pointName}</small>`
+          : `<span style="color:#94a3b8;">${c.pointName === "なし" ? "なし" : c.pointName}</span>`;
       return `
         <tr>
           <td><strong>${e.name}</strong><br><small style="color:#64748b">${e.planName}</small></td>
           <td>¥${c.rawBill.toLocaleString()}/月</td>
           <td style="color:#059669;font-weight:700;">${c.bundleDiscount + c.promoMonthlyDiscount > 0 ? `-¥${(c.bundleDiscount + c.promoMonthlyDiscount).toLocaleString()}/月` : "なし"}</td>
-          <td style="font-weight:800;color:#1d4ed8;">¥${c.effectiveElecMonthly.toLocaleString()}/月</td>
-          <td>${diff >= 0 ? `関電より月 ¥${diff.toLocaleString()} 安い` : `関電と同水準`}</td>
-          <td><a class="source-link" href="${sourceUrl}" target="_blank" rel="noopener noreferrer">🔗 公式料金・割引条件 ↗</a></td>
+          <td>${pointCell}</td>
+          <td style="font-weight:800;color:#1d4ed8;">¥${effectiveAfterPoint.toLocaleString()}/月</td>
+          <td>${diff > 0 ? `関電より月 ¥${diff.toLocaleString()} 安い` : `関電と同水準`}</td>
+          <td><a class="source-link" href="${sourceUrl}" target="_blank" rel="noopener noreferrer">🔗 公式料金・還元条件 ↗</a></td>
         </tr>
       `;
     }).join("");
@@ -859,7 +1108,8 @@ function renderMatrixTable(state, kandenBase) {
           <th>電力会社・プラン</th>
           <th>基本算定額（${state.kwh}kWh）</th>
           <th>セット割・特典</th>
-          <th>実質月額（電気代）</th>
+          <th>公式ポイント還元</th>
+          <th>実質月額${isPointIncluded ? "（ポイント込）" : ""}</th>
           <th>関西電力（従量電灯A）との差額</th>
           <th>公式情報ソース</th>
         </tr>

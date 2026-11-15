@@ -11,11 +11,11 @@
     <div class="container hero-inner">
       <div class="hero-top-bar">
         <div class="badge">関西エリア（大阪・京都・兵庫・滋賀・奈良・和歌山）専用</div>
-        <div class="survey-date">📅 調査実施日：2026年11月1日</div>
+        <div class="survey-date">📅 調査実施日：2026年11月15日</div>
       </div>
       <h1>関西 インターネット通信 × 電気代<br/>コスパ最強コンビ比較シミュレーター</h1>
       <p class="subtitle">
-        光回線5社 × 電力6社（全30通りの組み合わせ）から、スマホセット割・電気ガスセット割・初年度特典まで加味して<strong>あなたの条件で最も実質負担が安い組み合わせ</strong>を自動算出します。
+        光回線5社 × 電力8社（全40通りの組み合わせ）から、スマホセット割・電気ガスセット割・初年度特典・<strong>公式ポイント還元（dポイント・Ponta・はぴe等）</strong>まで加味して<strong>あなたの条件で最も実質負担が安い組み合わせ</strong>を自動算出します。
       </p>
 
       <!-- 画面の縦横・デバイスに応じたレイアウト切替バー -->
@@ -143,6 +143,21 @@
             </label>
           </div>
         </div>
+
+        <!-- 7. ポイント還元の考慮 -->
+        <div class="form-group">
+          <label class="group-label">7. 公式ポイント還元の考慮（1pt＝1円換算）</label>
+          <div class="segmented-control">
+            <label class="segment">
+              <input type="radio" name="includePoints" value="include" checked />
+              <span>🪙 ポイント還元を差し引く（dポイント・Ponta・はぴe等）</span>
+            </label>
+            <label class="segment">
+              <input type="radio" name="includePoints" value="exclude" />
+              <span>💴 現金・直接値引きのみで比較（ポイント除外）</span>
+            </label>
+          </div>
+        </div>
       </form>
     </section>
 
@@ -173,7 +188,7 @@
       <!-- TOP 10 ランキング（スクロール表示） -->
       <div class="ranking-wrapper card">
         <div class="ranking-wrapper-header">
-          <h3>🏆 コスパ順ベスト10 ランキング（全30通り中）</h3>
+          <h3>🏆 コスパ順ベスト10 ランキング（全40通り中）</h3>
           <span class="scroll-hint">⬇️ 下にスクロールして4位〜10位を確認できます</span>
         </div>
         <div id="ranking-container" class="ranking-list"></div>
@@ -182,10 +197,10 @@
       <!-- 全業者単体データ一覧（折りたたみ・タブ） -->
       <div class="card provider-matrix-card">
         <h3>📊 調査済み・関西エリア主要事業者の料金データ一覧</h3>
-        <p class="matrix-desc">現在の入力条件（住居・速度・電気使用量）における各社の単体料金内訳です。</p>
+        <p class="matrix-desc">現在の入力条件（住居・速度・電気使用量）における各社の単体料金・ポイント還元内訳です。</p>
         <div class="matrix-tabs">
           <button type="button" class="tab-btn active" data-tab="internet">🌐 光回線（5社比較）</button>
-          <button type="button" class="tab-btn" data-tab="electricity">💡 電力会社（6社比較）</button>
+          <button type="button" class="tab-btn" data-tab="electricity">💡 電力会社（8社比較）</button>
         </div>
         <div class="table-responsive">
           <table class="comparison-table" id="matrix-table">
@@ -196,19 +211,19 @@
     </section>
   </main>
 
-  <!-- ページ末尾：全30パターン比較グラフセクション -->
+  <!-- ページ末尾：全40パターン比較グラフセクション -->
   <section class="container all-patterns-section" aria-labelledby="chart-heading">
     <div class="card chart-card">
       <div class="chart-header">
         <div>
           <span class="step-tag">STEP 3</span>
-          <h2 id="chart-heading">📈 全30パターン（光5社 × 電気6社）料金比較グラフ</h2>
+          <h2 id="chart-heading">📈 全40パターン（光5社 × 電気8社）料金比較グラフ</h2>
           <p class="matrix-desc">
-            現在の入力条件における<strong>全30通りの月額実質負担（ネット実質＋電気代実質）</strong>をグラフ化しています。棒の長さでトータルコストと内訳を一目で比較できます。
+            現在の入力条件における<strong>全40通りの月額実質負担（ネット実質＋電気代実質−ポイント還元）</strong>をグラフ化しています。棒の長さでトータルコストと内訳を一目で比較できます。
           </p>
         </div>
         <div class="chart-controls">
-          <button type="button" class="chart-sort-btn active" data-sort="rank">🏆 安い順（1位〜30位）</button>
+          <button type="button" class="chart-sort-btn active" data-sort="rank">🏆 安い順（1位〜40位）</button>
           <button type="button" class="chart-sort-btn" data-sort="provider">🌐 光回線グループ順</button>
         </div>
       </div>
